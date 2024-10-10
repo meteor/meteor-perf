@@ -37,7 +37,15 @@ Example:
 ```json
 {
   "bytes_sent": 2661331,
-  "async_traces": [],
+  "async_traces": [
+    {
+      "count": 60,
+      "types": [
+        "PROMISE"
+      ],
+      "stack": "    at Publication._getCursor (packages/reywood:publish-composite/lib/publication.js:95:36)\n    at Publication.publish (packages/reywood:publish-composite/lib/publication.js:26:30)\n    at packages/reywood:publish-composite/lib/publication.js:110:17\n    at Array.map (<anonymous>)\n    at Publication._publishChildrenOf (packages/reywood:publish-composite/lib/publication.js:106:32)\n    at Publication._handleAddedAsync (packages/reywood:publish-composite/lib/publication.js:77:18)\n    at packages/reywood:publish-composite/lib/publication.js:38:16\n    at new Promise (<anonymous>)\n    at packages/reywood:publish-composite/lib/publication.js:36:30\n    at packages/meteor.js:1399:24"
+    }
+  ],
   "observer_stats": [
     {
       "key": "child::{\"parentId\":\"MBLMPnnYYCu3RC99p\"}",
