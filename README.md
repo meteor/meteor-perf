@@ -12,21 +12,21 @@ meteor add meteor-perf
 
 ## Usage
 
-Right now it will output a file called `async-resources.json` in the root of your project as your app is running.
+Right now it will output a file called `meteor-perf.json` in the root of your project as your app is running.
 
 This file can be inspected in any code editor that supports JSON.
 
 The object contains the following keys;
 
-### `bytesSent`:
+### `bytes_sent`:
 
 The amount of data sent from the server to the client in bytes.
 
-### `logs`:
+### `async_traces`:
 
 An array of objects containing traces for async resources that were created during Event Loop Lag, along with execution count.
 
-### `stats`:
+### `observer_stats`:
 
 An array of objects containing stat objects for Observer Handles,
 the number of operations they performed, and a key to identify them.
@@ -36,9 +36,9 @@ Example:
 
 ```json
 {
-  "bytesSent": 2661331,
-  "logs": [],
-  "stats": [
+  "bytes_sent": 2661331,
+  "async_traces": [],
+  "observer_stats": [
     {
       "key": "child::{\"parentId\":\"MBLMPnnYYCu3RC99p\"}",
       "added": 5600,
@@ -46,9 +46,9 @@ Example:
       "removed": 0,
       "started": 56,
       "stopped": 42,
-      "laggingAdded": 0,
-      "laggingChanged": 0,
-      "laggingRemoved": 0,
+      "lagging_added": 0,
+      "lagging_changed": 0,
+      "lagging_removed": 0,
       "score": 14854
     }
   ]

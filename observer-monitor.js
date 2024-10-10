@@ -139,9 +139,9 @@ class NamespaceStat {
       started: this.started,
       stopped: this.stopped,
 
-      laggingAdded: this.laggingAdded,
-      laggingChanged: this.laggingChanged,
-      laggingRemoved: this.laggingRemoved,
+      lagging_added: this.laggingAdded,
+      lagging_changed: this.laggingChanged,
+      lagging_removed: this.laggingRemoved,
 
       score: this.score,
     }
