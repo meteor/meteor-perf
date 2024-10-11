@@ -1,6 +1,6 @@
 import { MongoInternals } from "meteor/mongo";
 import { EJSON } from "meteor/ejson";
-import { PerfInsights } from './index';
+import { MeteorPerf } from './index';
 
 const _observeChanges = MongoInternals.Connection.prototype._observeChanges;
 
@@ -90,7 +90,7 @@ class NamespaceStat {
   }
 
   incrementAdded() {
-    if (PerfInsights.EventLoopMonitor.lagging) {
+    if (MeteorPerf.EventLoopMonitor.lagging) {
       this.laggingAdded++;
       this.score += 10;
     } else {
@@ -100,7 +100,7 @@ class NamespaceStat {
   }
 
   incrementChanged() {
-    if (PerfInsights.EventLoopMonitor.lagging) {
+    if (MeteorPerf.EventLoopMonitor.lagging) {
       this.laggingChanged++;
       this.score += 10;
     } else {
@@ -110,7 +110,7 @@ class NamespaceStat {
   }
 
   incrementRemoved() {
-    if (PerfInsights.EventLoopMonitor.lagging) {
+    if (MeteorPerf.EventLoopMonitor.lagging) {
       this.laggingRemoved++;
       this.score += 10;
     } else {
