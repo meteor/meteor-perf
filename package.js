@@ -20,7 +20,8 @@ Package.onTest(function(api) {
   Npm.depends({
     'chai': '4.3.4',
     'sinon': '10.0.0',
-    'sinon-chai': '3.6.0'
+    'sinon-chai': '3.6.0',
+    'benchmarkify': '4.0.0'
   });
 
   api.mainModule('tests/index.js', 'server');

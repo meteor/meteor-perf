@@ -1,4 +1,4 @@
-import { asyncResources } from './async-interceptor';
+import { AsyncResourceMap } from './async-interceptor';
 import { StatDict } from './observer-monitor';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -9,14 +9,13 @@ export function saveOutput() {
   performance.mark('saveOutput-start');
   let async_traces = []
 
-  asyncResources.forEach((info, stack) => {
+  AsyncResourceMap.forEach((info, stack) => {
     if (info.count <= 1) {
       return;
     }
 
     async_traces.push({
       count: info.count,
-      types: [...info.types],
       stack,
     });
   });

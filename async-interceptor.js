@@ -1,25 +1,45 @@
 import async_hooks from 'node:async_hooks';
 
-export const asyncResources = new Map();
+// 50% of map limit
+export const GC_LIMIT = Meteor.isPackageTest ? 7 : Math.pow(2, 23);
+
+export const AsyncResourceMap = new Map();
 
 export const AsyncInterceptor = async_hooks.createHook({
-  init(asyncId, type, triggerAsyncId, resource) {
-    logResourceCreation(asyncId, type, triggerAsyncId, resource);
+  init(asyncId, type) {
+    captureResource(asyncId, type);
   },
 });
 
-function logResourceCreation(asyncId, type, triggerAsyncId, resource) {
-  const stack = (new Error()).stack.split('\n').slice(2).filter(line => {
-    return !['AsyncHook.init', 'node:internal/async_hooks'].some(fn => line.includes(fn));
-  }).join('\n');
+function captureResource(asyncId, type) {
+  let stack = stackTrace();
 
-  if (!asyncResources.has(stack)) {
-    asyncResources.set(stack, { count: 0, types: new Set() });
+  stack = `${type}\n${stack}`;
+
+  if (AsyncResourceMap.size > GC_LIMIT) {
+    garbageCollectAsyncResources();
   }
 
-  const resourceInfo = asyncResources.get(stack);
+  if (!AsyncResourceMap.has(stack)) {
+    AsyncResourceMap.set(stack, { count: 0, ts: Date.now() });
+  }
+
+  const resourceInfo = AsyncResourceMap.get(stack);
   resourceInfo.count++;
-  resourceInfo.types.add(type);
 }
 
+function garbageCollectAsyncResources() {
+  AsyncResourceMap.forEach((info, stack) => {
+    if (info.count <= 1) {
+      AsyncResourceMap.delete(stack);
+    }
+  });
+}
 
+export function stackTrace () {
+  return (new Error()).stack.split('\n').slice(3).filter(line => {
+    return !['AsyncHook.init', 'node:internal/async_hooks'].some(fn => line.includes(fn));
+  }).join('\n')
+}
+
+setInterval(garbageCollectAsyncResources, 10000);

@@ -1,0 +1,45 @@
+name: Test Meteor Perf Package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      METEOR_VERSION: 3.0.4
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Cache Meteor Installation
+        id: meteor-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.meteor
+          key: ${{ runner.os }}-meteor-${{ env.METEOR_VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-meteor-
+
+      - name: Install Meteor (if not cached)
+        if: steps.meteor-cache.outputs.cache-hit != 'true'
+        run: |
+          npx meteor@${{ env.METEOR_VERSION }}
+
+      - name: Export Path
+        run: |
+          echo "$HOME/.meteor" >> $GITHUB_PATH
+
+      - name: Run Tests
+        run: |
+          TEST_CLIENT=0 meteor test-packages ./ --driver-package meteortesting:mocha --no-release-check --once
