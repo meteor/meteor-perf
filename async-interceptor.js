@@ -7,27 +7,26 @@ export const AsyncResourceMap = new Map();
 
 export const AsyncInterceptor = async_hooks.createHook({
   init(asyncId, type) {
-    logResourceCreation(asyncId, type);
+    captureResource(asyncId, type);
   },
 });
 
-function logResourceCreation(asyncId, type) {
-  const stack = (new Error()).stack.split('\n').slice(2).filter(line => {
-    return !['AsyncHook.init', 'node:internal/async_hooks'].some(fn => line.includes(fn));
-  }).join('\n');
+function captureResource(asyncId, type) {
+  let stack = stackTrace();
+
+  stack = `${type}\n${stack}`;
 
   if (AsyncResourceMap.size > GC_LIMIT) {
-    console.log('Meteor Perf: Garbage collecting async resources');
+    console.log('Meteor Perf: Reached AsyncResourceMap limit, garbage collecting');
     garbageCollectAsyncResources();
   }
 
   if (!AsyncResourceMap.has(stack)) {
-    AsyncResourceMap.set(stack, { count: 0, types: new Set() });
+    AsyncResourceMap.set(stack, { count: 0 });
   }
 
   const resourceInfo = AsyncResourceMap.get(stack);
   resourceInfo.count++;
-  resourceInfo.types.add(type);
 }
 
 function garbageCollectAsyncResources() {
@@ -37,3 +36,11 @@ function garbageCollectAsyncResources() {
     }
   });
 }
+
+export function stackTrace () {
+  return (new Error()).stack.split('\n').slice(3).filter(line => {
+    return !['AsyncHook.init', 'node:internal/async_hooks'].some(fn => line.includes(fn));
+  }).join('\n')
+}
+
+setInterval(garbageCollectAsyncResources, 10000);
