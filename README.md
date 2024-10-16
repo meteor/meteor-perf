@@ -32,6 +32,8 @@ An array of objects containing stat objects for Observer Handles,
 the number of operations they performed, and a key to identify them.
 The key is composed of the `collection` and the `selector` separated by `::`.
 
+It groups the stats by selector, so you can see how many operations were performed on a specific query.
+
 Example:
 
 ```json
@@ -62,3 +64,15 @@ Example:
   ]
 }
 ```
+
+## Downloading the stat file
+
+You can call the following HTTP endpoint to download the stat file:
+
+```
+GET /meteor-perf.json
+```
+
+## License
+
+MIT
