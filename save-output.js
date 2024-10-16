@@ -16,7 +16,6 @@ export function saveOutput() {
 
     async_traces.push({
       count: info.count,
-      types: [...info.types],
       stack,
     });
   });

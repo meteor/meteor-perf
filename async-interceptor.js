@@ -1,7 +1,7 @@
 import async_hooks from 'node:async_hooks';
 
 // 50% of map limit
-export const GC_LIMIT = Math.pow(2, 23);
+export const GC_LIMIT = Meteor.isPackageTest ? 7 : Math.pow(2, 23);
 
 export const AsyncResourceMap = new Map();
 
@@ -17,7 +17,6 @@ function captureResource(asyncId, type) {
   stack = `${type}\n${stack}`;
 
   if (AsyncResourceMap.size > GC_LIMIT) {
-    console.log('Meteor Perf: Reached AsyncResourceMap limit, garbage collecting');
     garbageCollectAsyncResources();
   }
 
