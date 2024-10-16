@@ -38,4 +38,4 @@ jobs:
 
       - name: Run Tests
         run: |
-          TEST_CLIENT=0 meteor test-packages ./ --driver-package meteortesting:mocha --no-release-check --once
+          TEST_CLIENT=0 ~/.meteor/meteor test-packages ./ --driver-package meteortesting:mocha --no-release-check --once
