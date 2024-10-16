@@ -35,6 +35,9 @@ jobs:
         if: steps.meteor-cache.outputs.cache-hit != 'true'
         run: |
           npx meteor@${{ env.METEOR_VERSION }}
+
+      - name: Export Path
+        run: |
           export PATH=/home/runner/.meteor:$PATH
 
       - name: Run Tests
