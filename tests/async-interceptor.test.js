@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { AsyncInterceptor, AsyncResourceMap, GC_LIMIT, stackTrace } from '../async-interceptor';
 import Benchmarkify from "benchmarkify";
 
-const benchmark = new Benchmarkify("Meteor Perf", { chartImage: true }).printHeader();
+const benchmark = new Benchmarkify("Meteor Perf").printHeader();
 
 benchmark.createSuite("Stack Trace", { time: 1000 })
   .add("default error stack trace", () => {
@@ -14,9 +14,39 @@ benchmark.createSuite("Stack Trace", { time: 1000 })
     }).join('\n');
   });
 
+benchmark.createSuite("Interceptor Overhead", { time: 3000 })
+  .setup(() => {
+    AsyncInterceptor.enable();
+  })
+  .tearDown(() => {
+    AsyncInterceptor.disable();
+  })
+  .add("on", async (done) => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    })
+
+    done()
+  })
+  .ref("off", async (done) => {
+    AsyncInterceptor.disable();
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    })
+
+    done()
+  });
+
+
+
 await benchmark.run();
 
 describe('Async Interceptor', () => {
+  beforeEach(() => {
+    AsyncResourceMap.clear();
+  })
+
   it('get stack trace', async () => {
     const stack = stackTrace();
 
@@ -78,10 +108,45 @@ describe('Async Interceptor', () => {
       await new Promise((resolve) => {
         setTimeout(resolve, 1);
       });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1);
+      });
     }
 
     AsyncInterceptor.disable();
 
     expect(AsyncResourceMap.size).to.be.lessThanOrEqual(GC_LIMIT);
   })
+
+  it('should have ts timestamp attribute for all trace entries', async () => {
+    AsyncInterceptor.enable();
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+
+    AsyncInterceptor.disable();
+
+    AsyncResourceMap.forEach((info) => {
+      expect(info).to.have.property('ts');
+    });
+  });
 });

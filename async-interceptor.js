@@ -21,7 +21,7 @@ function captureResource(asyncId, type) {
   }
 
   if (!AsyncResourceMap.has(stack)) {
-    AsyncResourceMap.set(stack, { count: 0 });
+    AsyncResourceMap.set(stack, { count: 0, ts: Date.now() });
   }
 
   const resourceInfo = AsyncResourceMap.get(stack);
