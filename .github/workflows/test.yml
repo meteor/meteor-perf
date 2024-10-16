@@ -38,7 +38,7 @@ jobs:
 
       - name: Export Path
         run: |
-          export PATH=/home/runner/.meteor:$PATH
+          echo "$HOME/.meteor" >> $GITHUB_PATH
 
       - name: Run Tests
         run: |
